@@ -1,0 +1,26 @@
+{
+  "kind": "collectionType",
+  "collectionName": "tokens",
+  "info": {
+    "singularName": "token",
+    "pluralName": "tokens",
+    "displayName": "Token"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "tokenValue": {
+      "type": "string",
+      "required": true,
+      "minLength": 5,
+      "unique": true
+    },
+    "expiresIn": {
+      "type": "integer",
+      "required": true,
+      "min": 0
+    }
+  }
+}
