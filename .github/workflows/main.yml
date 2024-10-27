@@ -28,14 +28,14 @@ jobs:
       # Install dependencies and build React app
       - name: Install React dependencies and build
         run: |
-          cd react_app  # Navigate to your React app directory
+          cd react/react-app  # Navigate to your React app directory
           npm install  # Install dependencies
           npm run build  # Build the React app
 
       # Install dependencies and build Strapi
       - name: Install Strapi dependencies
         run: |
-          cd strapi_app  # Navigate to your Strapi app directory
+          cd strapi/strapi-app  # Navigate to your Strapi app directory
           npm install  # Install Strapi dependencies
           npm run build  # Build Strapi
 
