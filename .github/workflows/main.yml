@@ -42,12 +42,23 @@ jobs:
       # Deploy React and Strapi to Oracle Cloud VM
       - name: Deploy React App to Oracle Cloud VM
         run: |
+          # Create a single archive of the React build files
           tar -czf /tmp/react_build.tar.gz -C react/react-app/build .  # Archive the React build files
-          scp -o StrictHostKeyChecking=no /tmp/react_build.tar.gz opc@${{ secrets.ORACLE_IP }}:/tmp/
-          ssh opc@${{ secrets.ORACLE_IP }} 'sudo tar -xzf /tmp/react_build.tar.gz -C /usr/share/nginx/html/react && sudo systemctl restart nginx'
+          
+          # Copy the archive to the remote server
+          scp -o StrictHostKeyChecking=no /tmp/react_build.tar.gz opc@***:/tmp/
+          
+          # SSH into the server, extract the files, and restart Nginx
+          ssh opc@*** 'sudo tar -xzf /tmp/react_build.tar.gz -C /usr/share/nginx/html/react && sudo systemctl restart nginx'
+
 
       - name: Deploy Strapi to Oracle Cloud VM
         run: |
+          # Create an archive of the Strapi build files
           tar -czf /tmp/strapi_build.tar.gz -C strapi/strapi-app .  # Archive the Strapi build files
+      
+          # Copy the archive to the remote server
           scp -o StrictHostKeyChecking=no /tmp/strapi_build.tar.gz opc@${{ secrets.ORACLE_IP }}:/tmp/
-          ssh opc@${{ secrets.ORACLE_IP }} 'sudo tar -xzf /tmp/strapi_build.tar.gz -C /var/www/strapi && cd /var/www/strapi && npm install --production && pm2 restart strapi'  # Adjust paths and commands as needed
+      
+          # SSH into the server, extract the files, install production dependencies, and restart Strapi with pm2
+          ssh opc@${{ secrets.ORACLE_IP }} 'sudo tar -xzf /tmp/strapi_build.tar.gz -C /var/www/strapi && cd /var/www/strapi && npm install --production && pm2 restart strapi'
