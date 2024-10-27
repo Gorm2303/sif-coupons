@@ -1,0 +1,53 @@
+name: Deploy Node.js React App and Strapi to Oracle Cloud VM
+
+on:
+  push:
+    branches:
+      - main  # Trigger on push to the main branch
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4.2.0
+
+      # Set up Node.js
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'  # Specify the Node.js version
+
+      # Use the webfactory/ssh-agent action to add the SSH key
+      - name: Add SSH key
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      # Install dependencies and build React app
+      - name: Install React dependencies and build
+        run: |
+          cd react_app  # Navigate to your React app directory
+          npm install  # Install dependencies
+          npm run build  # Build the React app
+
+      # Install dependencies and build Strapi
+      - name: Install Strapi dependencies
+        run: |
+          cd strapi_app  # Navigate to your Strapi app directory
+          npm install  # Install Strapi dependencies
+          npm run build  # Build Strapi
+
+      # Deploy React and Strapi to Oracle Cloud VM
+      - name: Deploy React App to Oracle Cloud VM
+        run: |
+          tar -czf /tmp/react_build.tar.gz -C react_app/build .  # Archive the React build files
+          scp -o StrictHostKeyChecking=no /tmp/react_build.tar.gz opc@${{ secrets.ORACLE_IP }}:/tmp/
+          ssh opc@${{ secrets.ORACLE_IP }} 'sudo tar -xzf /tmp/react_build.tar.gz -C /usr/share/nginx/html/react && sudo systemctl restart nginx'
+
+      - name: Deploy Strapi to Oracle Cloud VM
+        run: |
+          tar -czf /tmp/strapi_build.tar.gz -C strapi_app .  # Archive the Strapi build files
+          scp -o StrictHostKeyChecking=no /tmp/strapi_build.tar.gz opc@${{ secrets.ORACLE_IP }}:/tmp/
+          ssh opc@${{ secrets.ORACLE_IP }} 'sudo tar -xzf /tmp/strapi_build.tar.gz -C /var/www/strapi && cd /var/www/strapi && npm install --production && pm2 restart strapi'  # Adjust paths and commands as needed
