@@ -61,4 +61,10 @@ jobs:
           scp -o StrictHostKeyChecking=no /tmp/strapi_build.tar.gz opc@${{ secrets.ORACLE_IP }}:/tmp/
       
           # SSH into the server, extract the files, install production dependencies, and restart Strapi with pm2
-          ssh opc@${{ secrets.ORACLE_IP }} 'sudo tar -xzf /tmp/strapi_build.tar.gz -C /var/www/sif_coupons && sudo chown -R opc:opc /var/www/sif_coupons && cd /var/www/sif_coupons && npm install --production && pm2 restart strapi'
+          ssh opc@${{ secrets.ORACLE_IP }} '
+            sudo tar -xzf /tmp/strapi_build.tar.gz -C /var/www/sif_coupons && \
+            sudo chown -R opc:opc /var/www/sif_coupons && \
+            cd /var/www/sif_coupons && \
+            npm install --omit=dev && \
+            pm2 start npm --name "strapi" -- run start || pm2 restart strapi
+          '
