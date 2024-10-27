@@ -46,10 +46,10 @@ jobs:
           tar -czf /tmp/react_build.tar.gz -C react/react-app/build .  # Archive the React build files
           
           # Copy the archive to the remote server
-          scp -o StrictHostKeyChecking=no /tmp/react_build.tar.gz opc@***:/tmp/
+          scp -o StrictHostKeyChecking=no /tmp/react_build.tar.gz opc@{{ secrets.ORACLE_IP }}:/tmp/
           
           # SSH into the server, extract the files, and restart Nginx
-          ssh opc@*** 'sudo tar -xzf /tmp/react_build.tar.gz -C /usr/share/nginx/html/react && sudo systemctl restart nginx'
+          ssh opc@{{ secrets.ORACLE_IP }} 'sudo tar -xzf /tmp/react_build.tar.gz -C /usr/share/nginx/html/react && sudo systemctl restart nginx'
 
 
       - name: Deploy Strapi to Oracle Cloud VM
