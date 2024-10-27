@@ -42,12 +42,12 @@ jobs:
       # Deploy React and Strapi to Oracle Cloud VM
       - name: Deploy React App to Oracle Cloud VM
         run: |
-          tar -czf /tmp/react_build.tar.gz -C react_app/build .  # Archive the React build files
+          tar -czf /tmp/react_build.tar.gz -C react/react-app/build .  # Archive the React build files
           scp -o StrictHostKeyChecking=no /tmp/react_build.tar.gz opc@${{ secrets.ORACLE_IP }}:/tmp/
           ssh opc@${{ secrets.ORACLE_IP }} 'sudo tar -xzf /tmp/react_build.tar.gz -C /usr/share/nginx/html/react && sudo systemctl restart nginx'
 
       - name: Deploy Strapi to Oracle Cloud VM
         run: |
-          tar -czf /tmp/strapi_build.tar.gz -C strapi_app .  # Archive the Strapi build files
+          tar -czf /tmp/strapi_build.tar.gz -C strapi/strapi-app .  # Archive the Strapi build files
           scp -o StrictHostKeyChecking=no /tmp/strapi_build.tar.gz opc@${{ secrets.ORACLE_IP }}:/tmp/
           ssh opc@${{ secrets.ORACLE_IP }} 'sudo tar -xzf /tmp/strapi_build.tar.gz -C /var/www/strapi && cd /var/www/strapi && npm install --production && pm2 restart strapi'  # Adjust paths and commands as needed
